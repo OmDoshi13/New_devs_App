@@ -88,17 +88,23 @@ async def calculate_total_revenue(property_id: str, tenant_id: str) -> Dict[str,
     except Exception as e:
         print(f"Database error for {property_id} (tenant: {tenant_id}): {e}")
         
-        # Create property-specific mock data for testing when DB is unavailable
-        # This ensures each property shows different figures
+        # Create tenant-specific mock data for testing when DB is unavailable
+        # Each tenant has their own properties with isolated data
         mock_data = {
-            'prop-001': {'total': '1000.00', 'count': 3},
-            'prop-002': {'total': '4975.50', 'count': 4}, 
-            'prop-003': {'total': '6100.50', 'count': 2},
-            'prop-004': {'total': '1776.50', 'count': 4},
-            'prop-005': {'total': '3256.00', 'count': 3}
+            'tenant-a': {
+                'prop-001': {'total': '2250.00', 'count': 4},   # Beach House Alpha
+                'prop-002': {'total': '4975.50', 'count': 4},   # City Apartment Downtown
+                'prop-003': {'total': '6100.50', 'count': 2},   # Country Villa Estate
+            },
+            'tenant-b': {
+                'prop-001': {'total': '0.00', 'count': 0},      # Mountain Lodge Beta (no reservations in seed)
+                'prop-004': {'total': '1776.50', 'count': 4},   # Lakeside Cottage
+                'prop-005': {'total': '3256.00', 'count': 3},   # Urban Loft Modern
+            }
         }
         
-        mock_property_data = mock_data.get(property_id, {'total': '0.00', 'count': 0})
+        tenant_mock = mock_data.get(tenant_id, {})
+        mock_property_data = tenant_mock.get(property_id, {'total': '0.00', 'count': 0})
         
         return {
             "property_id": property_id,
